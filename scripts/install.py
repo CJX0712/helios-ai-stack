@@ -21,6 +21,29 @@ def _optional_requirements() -> str:
     return os.path.join(ROOT, "requirements.lock.optional.txt")
 
 
+def _install_package_editable() -> int:
+    """安装 helios 源码包（src 布局）为 editable，使 `python -m helios.cli` 与 `helios`
+    命令可用。--no-deps 复用已锁定的强制依赖；--no-build-isolation 依赖已装入的
+    setuptools/wheel，避免构建期再联网。失败为硬错误：缺包则 CLI/demo 全部不可运行。
+    """
+    # 确保构建后端存在（一次性，幂等）。
+    subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-U", "pip", "setuptools", "wheel"],
+        cwd=ROOT,
+        check=False,
+    )
+    print("[install] 安装 helios 包（editable，本地构建，不拉取依赖）")
+    result = subprocess.run(
+        [sys.executable, "-m", "pip", "install", "-e", ".", "--no-deps", "--no-build-isolation"],
+        cwd=ROOT,
+    )
+    if result.returncode == 0:
+        print("[install] helios 包安装完成 [OK]")
+    else:
+        print("[install] helios 包安装失败 [WARN]")
+    return result.returncode
+
+
 def main() -> int:
     req = _mandatory_requirements()
     print(f"[install] 使用 {os.path.basename(req)}（强制依赖，零下载零编译）")
@@ -29,6 +52,10 @@ def main() -> int:
         print("[install] 依赖安装失败 [WARN]")
         return result.returncode
     print("[install] 强制依赖安装完成 [OK]")
+
+    pkg = _install_package_editable()
+    if pkg != 0:
+        return pkg
 
     # 可选通道仅当用户显式开启（HELIOS_INSTALL_OPTIONAL=1）时安装，
     # 避免干净克隆的强制复现在无编译工具链的 CI 上失败。
