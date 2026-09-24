@@ -21,6 +21,8 @@ jobs:
   gate:
     name: windows-py313-gate
     runs-on: windows-latest
+    env:
+      PYTHONUTF8: "1"
     defaults:
       run:
         shell: pwsh

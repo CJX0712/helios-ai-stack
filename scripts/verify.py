@@ -16,6 +16,15 @@ SRC = os.path.join(ROOT, "src")
 if SRC not in sys.path:
     sys.path.insert(0, SRC)
 
+
+def _ensure_utf8() -> None:
+    """强制 stdout/stderr 用 UTF-8，避免非 UTF-8 终端（如 en-US CI 的 cp1252）打印中文时崩溃。"""
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
 MODULES = [
     "helios.core.types", "helios.core.protocols", "helios.core.errors", "helios.core.config",
     "helios.core.registry", "helios.core.hashing", "helios.core.text", "helios.core.net",
@@ -86,6 +95,7 @@ def check_ruff() -> bool:
 
 
 def main() -> int:
+    _ensure_utf8()
     print("=== helios-ai-stack 验收闸门 ===\n")
     print("[1/4] 模块导入")
     ok, warn = check_imports()

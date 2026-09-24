@@ -63,6 +63,15 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
+def _ensure_utf8() -> None:
+    """强制 stdout/stderr 用 UTF-8，避免非 UTF-8 终端（如 en-US CI 的 cp1252）打印中文时崩溃。"""
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 def iter_scan_files(root: Path) -> list[Path]:
     """收集需要扫描的文件，按路径排序保证输出稳定。"""
     found: list[Path] = []
@@ -140,6 +149,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="helios 源码卫生门禁（emoji / 行数 / TODO）")
     parser.add_argument("--verbose", action="store_true", help="打印每个被扫描的文件")
     args = parser.parse_args(argv)
+    _ensure_utf8()
 
     root = repo_root()
     self_path = Path(__file__).resolve()

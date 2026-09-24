@@ -16,7 +16,17 @@ if SRC not in sys.path:
     sys.path.insert(0, SRC)
 
 
+def _ensure_utf8() -> None:
+    """强制 stdout/stderr 用 UTF-8，避免非 UTF-8 终端（如 en-US CI 的 cp1252）打印中文时崩溃。"""
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 def main() -> int:
+    _ensure_utf8()
     parser = argparse.ArgumentParser(description="helios-ai-stack 一键 demo")
     parser.add_argument("--profile", default="offline")
     args = parser.parse_args()

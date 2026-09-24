@@ -22,6 +22,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+def _ensure_utf8() -> None:
+    """强制 stdout/stderr 用 UTF-8，避免非 UTF-8 终端（如 en-US CI 的 cp1252）打印中文时崩溃。"""
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 # 必须**不被**忽略的路径（干净克隆后必须存在）。
 MUST_KEEP: tuple[str, ...] = (
     "src/helios/__init__.py",
@@ -152,6 +161,7 @@ def is_ignored(rel_path: str, patterns: list[_Pattern]) -> bool:
 def main(argv: list[str] | None = None) -> int:
     """入口：执行双向断言，返回进程退出码。"""
     del argv  # 该门禁无参数，保持签名一致便于脚本化调用
+    _ensure_utf8()
     root = Path(__file__).resolve().parent.parent
     gitignore = root / ".gitignore"
     if not gitignore.is_file():

@@ -12,6 +12,15 @@ from ..core.config import ProfileConfig
 from ..pipeline import Pipeline
 
 
+def _ensure_utf8() -> None:
+    """强制 stdout/stderr 用 UTF-8，避免非 UTF-8 终端（如 en-US CI 的 cp1252）打印中文时崩溃。"""
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 def _build_pipeline(profile: str) -> Pipeline:
     cfg = ProfileConfig.from_env({"HELIOS_PROFILE": profile})
     return Pipeline(cfg)
@@ -118,6 +127,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
+    _ensure_utf8()
     parser = build_parser()
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
     return args.func(args)

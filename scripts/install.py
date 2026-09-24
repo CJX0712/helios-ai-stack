@@ -13,6 +13,15 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def _ensure_utf8() -> None:
+    """强制 stdout/stderr 用 UTF-8，避免非 UTF-8 终端（如 en-US CI 的 cp1252）打印中文时崩溃。"""
+    for _stream in (sys.stdout, sys.stderr):
+        try:
+            _stream.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+
+
 def _mandatory_requirements() -> str:
     return os.path.join(ROOT, "requirements.lock.txt")
 
@@ -45,6 +54,7 @@ def _install_package_editable() -> int:
 
 
 def main() -> int:
+    _ensure_utf8()
     req = _mandatory_requirements()
     print(f"[install] 使用 {os.path.basename(req)}（强制依赖，零下载零编译）")
     result = subprocess.run([sys.executable, "-m", "pip", "install", "-r", req], cwd=ROOT)
