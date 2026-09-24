@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import sys
 
 from pathlib import Path
@@ -15,10 +16,8 @@ from ..pipeline import Pipeline
 def _ensure_utf8() -> None:
     """强制 stdout/stderr 用 UTF-8，避免非 UTF-8 终端（如 en-US CI 的 cp1252）打印中文时崩溃。"""
     for _stream in (sys.stdout, sys.stderr):
-        try:
+        with contextlib.suppress(Exception):
             _stream.reconfigure(encoding="utf-8")
-        except Exception:
-            pass
 
 
 def _build_pipeline(profile: str) -> Pipeline:
