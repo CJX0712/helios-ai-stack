@@ -102,7 +102,7 @@ ans = pipe.query("RAG 是什么？")   # ans.text / ans.citations / ans.timings
 - **源码门禁**（CI 在 `windows-latest × Python 3.13` 全绿）：
   1. `pip install -r requirements.lock.txt` → `pip check`
   2. `ruff check .`（0 error）
-  3. `scripts/scan_emoji.py`（emoji 0 / 单文件 ≤300 行 / TODO 0）
+  3. `scripts/scan_emoji.py`（emoji 0 / 单文件 ≤300 行 / 遗留待办 0）
   4. `scripts/check_gitignore.py`（源码不被误忽略）
   5. `pytest -m "not requires_model"`（全绿）
   6. `python -m helios.cli demo --profile offline`（端到端 exit 0）
