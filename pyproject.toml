@@ -1,0 +1,69 @@
+# 作者：晨星
+# 项目 helios-ai-stack 的唯一权威包声明（ARCH C1 / §7.2）。
+#
+# 约定：
+#   1. 项目名 helios-ai-stack，Python 包名 helios，源码根 src/helios/；
+#   2. requires-python 锁 Py3.13（本机实测版本 3.13.14）；
+#   3. CLI 入口 python -m helios.cli 与 console script helios 均指向 helios.cli.main:main；
+#   4. 所有可选依赖放进 optional-dependencies，不进 P0 验收链。
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "helios-ai-stack"
+version = "0.1.0"
+description = "无 GPU Windows 机器上可离线一键复现的模块化端到端 RAG 系统"
+requires-python = ">=3.13,<3.14"
+license = { text = "Apache-2.0" }
+authors = [{ name = "晨星" }]
+keywords = ["rag", "offline", "faiss", "bm25", "llama-cpp", "fastapi"]
+classifiers = [
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: Microsoft :: Windows",
+]
+dependencies = [
+    "numpy==2.5.3",
+    "pydantic==2.13.5",
+    "rank-bm25==0.2.2",
+    "pypdf==6.18.1",
+    "fastapi==0.141.1",
+    "uvicorn==0.53.0",
+    "httpx==0.28.1",
+    "loguru==0.7.3",
+    "PyYAML==6.0.3",
+    "mmh3==5.3.0",
+    "diskcache==5.6.3",
+]
+
+[project.optional-dependencies]
+# 向量层 faiss 通道（T05），本机已装 cp313 win_amd64 wheel，禁止重装。
+vector = ["faiss-cpu==1.15.0"]
+# 嵌入/重排的 ONNX 通道（T04 / T08）。
+onnx = ["onnxruntime==1.30.0", "tokenizers==0.23.2", "fastembed==0.8.0"]
+# GGUF 本地生成（T09），本机已装且体积巨大，禁止重装。
+gguf = ["llama-cpp-python==0.3.19"]
+# MCP server（T12）。
+mcp = ["mcp==2.2.0"]
+# 模型下载通道（T15 的 scripts/fetch_models.py），纯 Python，可选。
+fetch = ["modelscope"]
+# 可替换性证明（T16 / P1），缺依赖时测试 skip 不 fail。
+compat = ["llama-index-core"]
+# 开发期门禁工具。
+dev = ["pytest==8.4.2", "ruff==0.16.8", "pytest-cov"]
+
+[project.scripts]
+helios = "helios.cli.main:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["helios*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+helios = ["api/static/*.html"]

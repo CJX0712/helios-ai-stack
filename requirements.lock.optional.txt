@@ -1,0 +1,16 @@
+# 作者：晨星
+# helios-ai-stack 可选依赖锁（增强通道，缺则降级，不进 P0 验收链）。
+#
+# 安装方式（显式，开发者本机按需）：
+#   python -m pip install -r requirements.lock.optional.txt
+#   HELIOS_INSTALL_OPTIONAL=1 python scripts/install.py
+#
+# 这些包体积大或在新 Python 上可能无预编译 wheel（需本地编译工具链），
+# 因此刻意排除在干净克隆的强制安装之外，保证「一键复现」在任意环境零失败。
+# 任一缺失时，对应后端经 registry 降级链自动跳过，系统其余部分照常运行。
+faiss-cpu==1.15.0            # 稠密 ANN 索引（MIT）；本机已装 cp313 win_amd64 wheel
+onnxruntime==1.30.0          # ONNX 推理（MIT）
+tokenizers==0.23.2           # ONNX 前后处理（Apache-2.0）
+fastembed==0.8.0             # ONNX 嵌入/重排（Apache-2.0）
+llama-cpp-python==0.3.19     # GGUF 本地生成（MIT）；体积巨大，需编译工具链
+mcp==2.2.0                   # MCP server（MIT）

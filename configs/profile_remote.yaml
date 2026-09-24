@@ -1,0 +1,37 @@
+# 作者：晨星
+# remote 档（P2）：远端嵌入 / 远端生成 / 远端重排（ARCH §6）。
+# 需要 API Key 或可达的远端端点；不进 P0 验收链。
+profile: remote
+
+embed:
+  backend: ollama             # 或 OpenAI 兼容远端，由 HELIOS_EMBED_BACKEND 覆盖
+  model: nomic-embed-text
+  dim: 768
+  fallbacks:
+    - hashing
+
+vector:
+  backend: faiss
+
+lexical:
+  backend: bm25
+
+rerank:
+  backend: remote
+  model: ""
+  fallbacks:
+    - lexical
+
+llm:
+  backend: openai             # OpenAI 兼容远端
+  model: ""
+  threads: 4
+  ctx: 4096
+  fallbacks:
+    - template
+
+tools:
+  calculator: 1
+
+network:
+  allow: 1

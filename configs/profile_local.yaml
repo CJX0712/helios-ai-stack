@@ -1,0 +1,38 @@
+# 作者：晨星
+# local 档（真实模型档）：优先本机 Ollama（已含 bge-m3 / qwen2.5），零下载即可真跑（ARCH §6 / F-21）。
+# huggingface.co 不可达，因此 ONNX 只作可选增强，全部失败回落到离线真实现。
+profile: local
+
+embed:
+  backend: ollama             # 本机已有 bge-m3（1024 维），零下载
+  model: bge-m3
+  dim: 1024
+  fallbacks:                  # 按序尝试，全部失败则回落到 hashing 并置 degraded
+    - hashing
+
+vector:
+  backend: faiss              # IndexFlatIP；量 > 5w 自动切 IndexIVFFlat
+  ivf_threshold: 50000
+
+lexical:
+  backend: bm25
+
+rerank:
+  backend: lexical            # IDF 加权词法重排（零依赖真实现），onnx 仅作可选增强
+  model: ""
+  fallbacks:
+    - onnx
+
+llm:
+  backend: ollama             # 本机已有 qwen2.5:7b-instruct-q4_K_M，零下载
+  model: qwen2.5:7b-instruct-q4_K_M
+  threads: 4
+  ctx: 4096
+  fallbacks:
+    - template
+
+tools:
+  calculator: 1
+
+network:
+  allow: 1                    # 仅 scripts/fetch_models.py 允许出网

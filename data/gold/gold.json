@@ -1,0 +1,12 @@
+{
+  "_meta": {"author": "晨星"},
+  "queries": [
+    {"query": "什么是 RAG 检索增强生成？", "relevant": ["rag.md"]},
+    {"query": "向量数据库用来做什么？", "relevant": ["vector_db.md"]},
+    {"query": "BM25 是怎么打分的？", "relevant": ["bm25.md"]},
+    {"query": "Faiss 支持哪些索引？", "relevant": ["faiss.md"]},
+    {"query": "Transformer 编码器如何生成句向量？", "relevant": ["transformer.md"]},
+    {"query": "RAG 为什么能降低幻觉？", "relevant": ["rag.md"]},
+    {"query": "余弦相似度和内积有什么关系？", "relevant": ["vector_db.md"]}
+  ]
+}

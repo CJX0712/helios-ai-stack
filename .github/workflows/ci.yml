@@ -1,0 +1,72 @@
+# 作者：晨星
+# helios-ai-stack 持续集成门禁（ARCH §7.2）。
+# 判据一律以退出码为准，不解析命令文本输出（ARCH F-13）。
+name: ci
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: windows-py313-gate
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install locked dependencies
+        run: python -m pip install -r requirements.lock.txt
+
+      - name: Install project in editable mode
+        run: python -m pip install -e . --no-deps
+
+      - name: Dependency sanity check
+        run: python -m pip check
+
+      - name: Lint
+        run: |
+          python -m pip install "ruff==0.16.8"
+          python -m ruff check .
+
+      - name: Source hygiene gate
+        run: python scripts/scan_emoji.py
+
+      - name: Gitignore rule guard
+        run: python scripts/check_gitignore.py
+
+      - name: Package import smoke
+        run: python -c "import helios; print(helios.__version__)"
+
+      - name: Unit tests
+        run: python -m pytest -m "not requires_model" --junitxml=benchmarks/junit.xml
+
+      - name: Offline end-to-end demo
+        run: python -m helios.cli demo --profile offline
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: benchmarks/junit.xml
+          if-no-files-found: ignore

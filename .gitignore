@@ -1,0 +1,56 @@
+# 作者：晨星
+# helios-ai-stack 忽略规则。
+#
+# 关键纪律（ARCH F-19 / C9）：
+#   1. 根目录临时文件规则必须「根锚定」为 /_*，绝不能写成 _*.py —— 后者会匹配
+#      src/helios/__init__.py（下划线开头 + .py 结尾），导致干净克隆里
+#      `from helios import X` 直接炸；
+#   2. 追加 !/**/__init__.py 作为二次保险；
+#   3. 该规则由 scripts/check_gitignore.py 守护（断言 __init__.py 未被 ignore）。
+#
+# ---------- Python 产物 ----------
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.egg-info/
+.eggs/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# ---------- 虚拟环境（根锚定）----------
+/.venv/
+/venv/
+/env/
+
+# ---------- 根目录临时文件（根锚定，F-19）----------
+/_*
+/_*.py
+/_*.md
+/_*.json
+/_*.txt
+/_*.log
+!/**/__init__.py
+
+# ---------- 运行时数据（根锚定，产物不入库）----------
+/data/index/
+/data/cache/
+/data/.pytest-tmp/
+/data/models/
+/models/
+/benchmarks/*.json
+/benchmarks/*.md
+
+# ---------- 本地环境与密钥 ----------
+.env
+*.local
+!.env.example
+
+# ---------- 编辑器与操作系统 ----------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

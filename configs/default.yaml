@@ -1,0 +1,27 @@
+# 作者：晨星
+# helios-ai-stack 公共默认参数（ARCH §4.1）。
+# 加载顺序：本文件 -> configs/profile_<profile>.yaml -> HELIOS_* 环境变量覆盖。
+# 注意：只放「公共且与档位无关」的参数；实现绑定一律放 profile_*.yaml。
+
+# ---------- 检索 ----------
+top_k: 5
+rerank_top_n: 20
+candidate_multiplier: 4      # 单路召回条数 = top_k * candidate_multiplier
+
+# ---------- 切块 ----------
+chunk_size: 600              # 目标字符数（中英混排按字符估算）
+chunk_overlap: 80            # 相邻块重叠字符数
+min_chunk_chars: 24          # 短于该值的碎片并入上一块
+
+# ---------- 嵌入 ----------
+embed_dim: 384
+embed_batch_size: 32
+
+# ---------- 超时（毫秒）----------
+timeout_search_ms: 2000
+timeout_llm_ms: 120000
+
+# ---------- 运行时 ----------
+log_level: INFO
+allow_network: 0
+strict_backends: 0           # 1 = 后端不可用直接抛错；0 = 降级并置 degraded

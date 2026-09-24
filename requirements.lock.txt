@@ -1,0 +1,28 @@
+# 作者：晨星
+# helios-ai-stack 强制依赖锁（干净克隆一键复现必装，零下载、零编译）。
+#
+# 使用方式：
+#   python -m pip install -r requirements.lock.txt
+#   python scripts/install.py            # 等价，自动选本文件
+#
+# 范围：离线 E2E + 全部单测 + HTTP API 所需的最小可靠集合。
+# 这些包在 Python 3.13 / Windows 上均有官方预编译 wheel，CI（windows-latest x3.13）必然装通。
+#
+# 可选通道（faiss / onnx / llama-cpp / mcp 等）见 requirements.lock.optional.txt，
+# 缺则按降级链自动跳过，不进 P0 验收链（ARCH F-21 / T16）。
+#
+# 纪律：无 GPL / AGPL / LGPL 传染性依赖（ARCH §7.1）。
+numpy==2.5.3             # 向量计算（BSD-3-Clause）
+pydantic==2.13.5         # 数据契约（MIT）
+PyYAML==6.0.3            # 配置加载（MIT）
+mmh3==5.3.0              # 哈希嵌入与稳定 ID（MIT）
+diskcache==5.6.3         # 结果缓存（MIT）
+loguru==0.7.3            # 结构化日志（MIT）
+httpx==0.28.1            # HTTP 客户端，统一 trust_env=False（BSD-3-Clause）
+rank-bm25==0.2.2         # BM25 词法检索（Apache-2.0）
+pypdf==6.18.1            # PDF 解析（BSD-3-Clause）
+fastapi==0.141.1         # HTTP/SSE（MIT）
+uvicorn==0.53.0          # ASGI server（BSD-3-Clause）
+starlette==1.6.0         # ASGI 底座（BSD-3-Clause）
+pytest==8.4.2            # 测试（MIT）
+ruff==0.16.8             # lint（MIT）

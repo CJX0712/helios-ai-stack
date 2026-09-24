@@ -1,0 +1,31 @@
+# 作者：晨星
+# offline 档（默认）：零下载、零 Key、全真实现（ARCH §6）。
+# 换实现只改本文件里的 backend 一行，业务代码零改动。
+profile: offline
+
+embed:
+  backend: hashing            # mmh3 有符号词哈希 + 中文字符 bigram
+  model: ""
+  dim: 384
+
+vector:
+  backend: numpy              # 精确余弦暴力检索，真实现
+
+lexical:
+  backend: bm25               # rank_bm25 + Robertson IDF 兜底 + 中文 2-gram
+
+rerank:
+  backend: lexical            # IDF 加权词法重排，真实现（非空操作）
+  model: ""
+
+llm:
+  backend: template           # 确定性模板生成（句子切分正则 F-10）
+  model: ""
+  threads: 4
+  ctx: 4096
+
+tools:
+  calculator: 1               # 确定性算术前置路由，常开
+
+network:
+  allow: 0                    # 出网即抛 E_*_NET_DISABLED
